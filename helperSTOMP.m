@@ -53,7 +53,7 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
 
     % Adding noise to the initial trajectory (theta) to sample multiple paths
     for i = 1:nPaths
-        noise = noise_std_dev * randn(size(theta)); % option to use normrnd?
+        noise = normrnd(0, noise_std_dev, size(theta));
         theta_samples{i} = theta + noise;
     end
     
