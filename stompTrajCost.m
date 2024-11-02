@@ -27,6 +27,17 @@ for i = 2 : nDiscretize
     % configuration theta values at different time (i=2:nDiscretize)
     [X, ~] = updateJointsWorldPosition(robot_struct, theta(:, i));
     [sphere_centers, radi] = stompRobotSphere(X);
+
+    %% TO CHANGE
+    % temporary placeholder solution for number of sphere centers being different across different time stamps
+    if size(sphere_centers,1) ~= size(sphere_centers_prev,1)
+        rowsDiff = size(sphere_centers_prev,1) - size(sphere_centers,1);
+        for i = 1:rowsDiff
+            sphere_centers(end+1, :) = sphere_centers(end, :);
+        end
+    end
+
+    %%
     % xb: 3D workspace position of sphere b at the current time
     % Approximate the speed (xb_dot) using the finite difference of the current and
     % the previous position
@@ -41,7 +52,7 @@ for i = 2 : nDiscretize
     endEffectorCoords = X(end, :); % extract the last row from X to obtain the end effector coords
     prevJointCoords = X(end-1, :); % extract the second last row from X to obtain the coords of the second last joint
     endEffectorDir = (endEffectorCoords - prevJointCoords) / norm(endEffectorCoords - prevJointCoords); % approximate the direction of the end effector
-    difference = [0, 0, 1] - endEffectorDir; % difference vector betw global z-axis and end-effector direction
+    difference = [0, 0, 1, 1] - endEffectorDir; % difference vector betw global z-axis and end-effector direction
     qc_cost(i) = dot(difference, difference); % l2 norm as a measure of constraint cost
 end
 
