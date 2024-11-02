@@ -35,14 +35,14 @@ for i = 2 : nDiscretize
     
     %% TODO: Define your qc_cost to add constraint on the end-effector
     % scenario 1: no constraints
-    % qc_cost = 0;
+    % qc_cost(i) = 0;
 
     % scenario 2: align y-axis of end-effector to the global z-axis
     endEffectorCoords = X(end, :); % extract the last row from X to obtain the end effector coords
     prevJointCoords = X(end-1, :); % extract the second last row from X to obtain the coords of the second last joint
     endEffectorDir = (endEffectorCoords - prevJointCoords) / norm(endEffectorCoords - prevJointCoords); % approximate the direction of the end effector
     difference = [0, 0, 1] - endEffectorDir; % difference vector betw global z-axis and end-effector direction
-    qc_cost = dot(difference, difference); % l2 norm as a measure of constraint cost
+    qc_cost(i) = dot(difference, difference); % l2 norm as a measure of constraint cost
 end
 
 %% Local trajectory cost: you need to specify the relative weights between different costs
