@@ -49,16 +49,43 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     tic
     %% TODO: Complete the following code. The needed functions are already given or partially given in the folder.
     %% TODO: Sample noisy trajectories
+    noise_std_dev = 0.1; % Adjust this value as needed for desired noise level
 
+    % Adding noise to the initial trajectory (theta) to sample multiple paths
+    for i = 1:nPaths
+        noise = normrnd(0, noise_std_dev, size(theta));
+        theta_samples{i} = theta + noise;
+    end
+    
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
-    % variable declaration (holder for the cost):
-    Stheta = zeros(nPaths, nDiscretize);
 
+    target_trajectory = zeros(numJoints, nDiscretize);
+    for k = 1:numJoints
+        target_trajectory(k, :) = linspace(q0(k), qT(k), nDiscretize);
+    end
+
+    % Loop through each sampled path and calculate its cost
+    for i = 1:nPaths
+        % Cost function can be distance-based, energy, or any other defined metric
+        local_cost(i) = sum(sum((theta_samples{i} - target_trajectory).^2)); % Example cost: squared error from target
+    end
     
     %% TODO: Given the local traj cost, update local trajectory probability
-
+    % Using softmax or another function to update probabilities based on local costs
+    beta = -1; % scaling factor for softmax (negative for cost minimization)
+    probabilities = exp(beta * local_cost) / sum(exp(beta * local_cost)); % Softmax for probabilities
     
     %% TODO: Compute delta theta (aka gradient estimator, the improvement of the delta)
+    % Calculate the weighted sum of trajectory differences based on probabilities
+    delta_theta = zeros(size(theta));
+    for i = 1:nPaths
+        delta_theta = delta_theta + probabilities(i) * (theta_samples{i} - theta);
+    end
+    
+    %% TODO: Compute the cost of the new trajectory
+    % Calculate the total cost of the updated theta trajectory
+    new_cost = sum(sum((theta + delta_theta - target_trajectory).^2)); % Example: squared error cost function
+
 
 
     %% TODO: Compute the cost of the new trajectory
@@ -77,6 +104,7 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
         disp('Maximum iteration (50) has reached.')
         break
     end
+    dtheta_smoothed = movmean(delta_theta, 3, 2); % Smooth along the second dimension (waypoints)
 
     if sum(dtheta_smoothed,'all') == 0
     disp('Estimated gradient is 0 and Theta is not updated: there could be no obstacle at all')
