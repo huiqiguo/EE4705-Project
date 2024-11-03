@@ -4,8 +4,7 @@ nDiscretize = 20; % number of discretized waypoint
 nPaths = 20; % number of sample paths
 convergenceThreshold = 0.1; % convergence threshhold
 
-% Initial guess of joint angles theta is just linear interpolation of q0
-% and qT
+% Initial guess of joint angles theta is just linear interpolation of q0 and qT
 q0 = currentRobotJConfig;
 qT = finalRobotJConfig;
 numJoints = length(q0);
@@ -40,7 +39,7 @@ RAR_time = [];
 [~, Qtheta] = stompTrajCost(robot_struct, theta, R, voxel_world);
 QthetaOld = 0;
 
-iter=0;
+iter=0; 
 while abs(Qtheta - QthetaOld) > convergenceThreshold
     iter=iter+1;
     % overall cost: Qtheta
@@ -49,14 +48,10 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     tic
     %% TODO: Complete the following code. The needed functions are already given or partially given in the folder.
     %% TODO: Sample noisy trajectories
-    noise_std_dev = 0.1; % Adjust this value as needed for desired noise level
-
-    % Adding noise to the initial trajectory (theta) to sample multiple paths
-    for i = 1:nPaths
-        noise = normrnd(0, noise_std_dev, size(theta));
-        theta_samples{i} = theta + noise;
-    end
-    
+    % generate covariance matrix of size [nDiscretize, nDiscretize]
+    scale = 10; % tunable parameter for smoothness
+    sigma = generateCovMatrix(nDiscretize, scale);
+    sampledTrajectories = stompSamples(nPaths, sigma, theta);
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
 
     target_trajectory = zeros(numJoints, nDiscretize);
