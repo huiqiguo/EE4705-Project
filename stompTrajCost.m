@@ -28,13 +28,14 @@ for i = 2 : nDiscretize
     [X, ~] = updateJointsWorldPosition(robot_struct, theta(:, i));
     [sphere_centers, radi] = stompRobotSphere(X);
 
-    %% TO CHANGE
-    % temporary placeholder solution for number of sphere centers being different across different time stamps
-    if size(sphere_centers,1) ~= size(sphere_centers_prev,1)
-        rowsDiff = size(sphere_centers_prev,1) - size(sphere_centers,1);
-        for i = 1:rowsDiff
-            sphere_centers(end+1, :) = sphere_centers(end, :);
-        end
+    %% TO IMPROVE
+    % number of sphere centers might be different across iterations,
+    % hence this section interpolates the larger array to match the number of points in the smaller array;
+    % works but very slow
+    if size(sphere_centers, 1) < size(sphere_centers_prev, 1)
+        sphere_centers_prev = interpolate(sphere_centers, sphere_centers_prev);
+    elseif size(sphere_centers, 1) > size(sphere_centers_prev, 1)
+        sphere_centers = interpolate(sphere_centers_prev, sphere_centers);
     end
 
     %%
