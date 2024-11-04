@@ -51,7 +51,7 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     % generate covariance matrix of size [nDiscretize, nDiscretize]
     scale = 10; % tunable parameter for smoothness
     sigma = generateCovMatrix(nDiscretize, scale);
-    sampledTrajectories = stompSamples(nPaths, sigma, theta);
+    [sampledTrajectories, noise] = stompSamples(nPaths, sigma, theta);
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
 
     % initialise column vector to store the cost from each sampled trajectory
