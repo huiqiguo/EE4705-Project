@@ -1,6 +1,6 @@
 % Given a trajectory, calculate its cost
 function [Stheta, Qtheta] = stompTrajCost(robot_struct, theta,  R, voxel_world)
-% Compute the local trajectory cost at each discretization theta point, 
+% Compute the local trajectory cost at each discretization theta point (Stheta), 
 % as well as the overall trajectory cost (the Qtheta)
 
 % Costi = stompCompute_Cost(robot, theta, Env);
@@ -58,6 +58,8 @@ for i = 2 : nDiscretize
 end
 
 %% Local trajectory cost: you need to specify the relative weights between different costs
+% size(Stheta) = [1, nDiscretize]
+% each cell is another vector of size [nJoints, 1]
 Stheta = 1000*qo_cost + qc_cost;
 
 % sum over time and add the smoothness cost

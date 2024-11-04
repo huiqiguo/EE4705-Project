@@ -55,14 +55,16 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
 
     % initialise column vector to store the cost from each sampled trajectory
-    localCost = zeros(nPaths, 1); 
+    localCost = cell(nPaths, 1); 
 
     % loop through each sampled path and calculate its cost
     for i = 1:nPaths
         theta_i = sampledTrajectories{i};
-        [~, cost_i] = stompTrajCost(robot_struct, theta_i, R, voxel_world);
-        localCost(i) = cost_i;
+        [scost_i, qcost_i] = stompTrajCost(robot_struct, theta_i, R, voxel_world);
+        localCost{i} = scost_i;
     end
+
+    localCost = cell2mat(localCost);
     
     %% TODO: Given the local traj cost, update local trajectory probability
     probabilities = stompUpdateProb(localCost);
