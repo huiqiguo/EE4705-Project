@@ -54,21 +54,18 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     sampledTrajectories = stompSamples(nPaths, sigma, theta);
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
 
-    target_trajectory = zeros(numJoints, nDiscretize);
-    for k = 1:numJoints
-        target_trajectory(k, :) = linspace(q0(k), qT(k), nDiscretize);
-    end
+    % initialise column vector to store the cost from each sampled trajectory
+    localCost = zeros(nPaths, 1); 
 
-    % Loop through each sampled path and calculate its cost
+    % loop through each sampled path and calculate its cost
     for i = 1:nPaths
-        % Cost function can be distance-based, energy, or any other defined metric
-        local_cost(i) = sum(sum((theta_samples{i} - target_trajectory).^2)); % Example cost: squared error from target
+        theta_i = sampledTrajectories{i};
+        [~, cost_i] = stompTrajCost(robot_struct, theta_i, R, voxel_world);
+        localCost(i) = cost_i;
     end
     
     %% TODO: Given the local traj cost, update local trajectory probability
-    % Using softmax or another function to update probabilities based on local costs
-    beta = -1; % scaling factor for softmax (negative for cost minimization)
-    probabilities = exp(beta * local_cost) / sum(exp(beta * local_cost)); % Softmax for probabilities
+    probabilities = stompUpdateProb(localCost);
     
     %% TODO: Compute delta theta (aka gradient estimator, the improvement of the delta)
     % Calculate the weighted sum of trajectory differences based on probabilities
@@ -116,7 +113,7 @@ disp('STOMP Finished.');
 
 
 %% check collision
-inCollision = false(nDiscretize, 1); % initialization the collision status vector
+inCollision = false(nDiscretize, 1); % initialize the collision status vector
 worldCollisionPairIdx = cell(nDiscretize,1); % Initialization: Provide the bodies that are in collision
 
 for i = 1:nDiscretize
