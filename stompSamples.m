@@ -4,7 +4,9 @@
 %   theta: mean trajectory from last iteration, size = [nJoints, nDiscretize]
 % Output:
 %   theta_paths: sampled trajectories
+%   size(theta_paths) = [1, nSamplePaths], size(each cell) = [nJoints, nDiscretize]
 %   em: sampled Gaussian noise for each joint
+%   size(em) = [1, nJoints], size(each cell) = [nSamplePaths, nDiscretize]
 
 function [theta_paths, em] = stompSamples(nSamplePaths, sigma, theta)
 % Sample theta (joints angles) trajectory 
