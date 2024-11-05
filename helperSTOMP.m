@@ -52,6 +52,7 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     scale = 10; % tunable parameter for smoothness
     sigma = generateCovMatrix(nDiscretize, scale);
     [sampledTrajectories, noise] = stompSamples(nPaths, sigma, theta);
+
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
 
     % initialise column vector to store the cost from each sampled trajectory

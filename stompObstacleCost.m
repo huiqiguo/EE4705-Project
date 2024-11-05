@@ -1,9 +1,9 @@
-function cost = stompObstacleCost(sphere_centers,radius,voxel_world,vel)
+function cost = stompObstacleCost(sphere_centers,radius,voxel_world,vel,nJoints)
 % this function computes the obstacle cost at a given time stamp
 % size(cost) = [nJoints, 1]
 
 safety_margin = 0.05; % the safety margin distance, unit: meter
-cost = 0;
+cost = zeros(nJoints, 1);
 % signed distance function of the world
 voxel_world_sEDT = voxel_world.sEDT;
 world_size = voxel_world.world_size;
@@ -21,13 +21,13 @@ try
     cost_array = zeros(length(sphere_centers), 1); % initialise empty col vector to store costs
     
     for sphere = 1:length(sphere_centers) % iterate through all the spheres
-        sphereCost = max([safety_margin + radius - dxb(sphere), 0])*vel(sphere); % obstacle cost for this sphere
+        sphereCost = max([safety_margin + radius(sphere) - dxb(sphere), 0])*vel(sphere); % obstacle cost for this sphere
         cost_array(sphere) = sphereCost; % append to the cost array
     end
     
     % sample points from the cost array such that number of points = nJoints
-    cost = cost_array(round(linspace(1, length(cost_array), numJoints)));
+    cost = cost_array(round(linspace(1, length(cost_array), nJoints)));
     
 catch  % for debugging
-    idx = ceil((sphere_centers-env_corner_vec)./voxel_world.voxel_size);
+    idx = ceil((sphere_centers-env_corner_vec)./voxel_world.voxel_size); 
 end
