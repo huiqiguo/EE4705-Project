@@ -21,15 +21,16 @@ theta_samples = cell(1,nPaths);
 
 %% for calculating the acceleration of theta
 % Precompute
-A_k = eye(nDiscretize + 1, nDiscretize + 1);
-A = -2 * eye(nDiscretize + 2, nDiscretize + 2); % identity matrix with -2 as the diagonal
-A(1:nDiscretize + 1, 2:nDiscretize + 2) = A(1:nDiscretize + 1, 2:nDiscretize + 2) + A_k; % sets the diagonal above the -2 diagonal to be all 1s
-A(2:nDiscretize + 2, 1:nDiscretize + 1) = A(2:nDiscretize + 2, 1:nDiscretize + 1) + A_k; % sets the diagonal below the -2 diagonal to be all 1s
+A_k = eye(nDiscretize - 1, nDiscretize - 1);
+A = -2 * eye(nDiscretize, nDiscretize); % identity matrix with -2 as the diagonal
+A(1:nDiscretize - 1, 2:nDiscretize) = A(1:nDiscretize - 1, 2:nDiscretize) + A_k; % sets the diagonal above the -2 diagonal to be all 1s
+A(2:nDiscretize, 1:nDiscretize - 1) = A(2:nDiscretize, 1:nDiscretize - 1) + A_k; % sets the diagonal below the -2 diagonal to be all 1s
 A = A(:, 2:end-1); % remove the first and last column of A, obtain the finite difference matrix
 R = A' * A; % multiply A by its transpose, R is symmetric
 Rinv = inv(R); % also symmetric
 M = 1 / nDiscretize * Rinv ./ max(Rinv, [], 1); % normalized by each column, no longer symmetric
 Rinv = 1.5*Rinv/sum(sum(Rinv)); % normalized R inverse, so that the sample is still within the voxel world
+Rinv = padarray(Rinv, [1 1], 0);
 
 %%
 %Planner
@@ -65,7 +66,7 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
         localCost{i} = scost_i;
     end
 
-    localCost = cell2mat(localCost); % size = [nPaths, nDiscretize]
+    % localCost = cell2mat(localCost); % size = [nPaths, nDiscretize]
     
     %% TODO: Given the local traj cost, update local trajectory probability
     probabilities = stompUpdateProb(localCost); % size = [nPaths, nDiscretize]
