@@ -53,8 +53,6 @@ binary_world(sub2ind([Env_size(2, 1) / voxel_size(1), Env_size(2, 2) / voxel_siz
 %% construct signed Euclidean Distance for the voxel world
 % Only approximation if the voxel is not a cube
 voxel_world_sEDT = prod(voxel_size) ^ (1/3) * sEDT_3d(binary_world);
-
-
 voxel_world.voxel_size = voxel_size;
 voxel_world.voxel = binary_world;
 % voxel_world.offset =  binary_world_offset;

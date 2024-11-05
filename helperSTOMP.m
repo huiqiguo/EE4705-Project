@@ -110,21 +110,16 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
         disp('Maximum iteration (50) has reached.')
         break
     end
-    dtheta_smoothed = movmean(delta_theta, 3, 2); % Smooth along the second dimension (waypoints)
+
+    dtheta_smoothed = movmean(dTheta, 3, 2); % Smooth along the second dimension (waypoints)
 
     if sum(dtheta_smoothed,'all') == 0
-    disp('Estimated gradient is 0 and Theta is not updated: there could be no obstacle at all')
-    break
+        disp('Estimated gradient is 0 and Theta is not updated: there could be no obstacle at all')
+        break
     end
-
 end
 
 disp('STOMP Finished.');
-
-
-
-
-
 
 %% check collision
 inCollision = false(nDiscretize, 1); % initialize the collision status vector
@@ -134,7 +129,6 @@ for i = 1:nDiscretize
 
     [inCollision(i),sepDist] = checkCollision(robot,theta(:,i),world,"IgnoreSelfCollision","on","Exhaustive","on");
 
-
     [bodyIdx,worldCollisionObjIdx] = find(isnan(sepDist)); % Find collision pairs
     worldCollidingPairs = [bodyIdx,worldCollisionObjIdx];
     worldCollisionPairIdx{i} = worldCollidingPairs;
@@ -142,11 +136,8 @@ for i = 1:nDiscretize
 end
 isTrajectoryInCollision = any(inCollision)
 
-
 %% Plot training dynamics
 enableVideoTraining = 0;
-
-
 
 v = VideoWriter('KinvaGen3_Training.avi');
 v.FrameRate = 15;
@@ -176,8 +167,6 @@ if enableVideoTraining == 1
 end
 close(v);
 
-
-
 %% Plot path
 enableVideo = 0;
 if enableVideo == 1
@@ -206,9 +195,6 @@ if displayAnimation
     end
 end
 
-
-
 %% save data
 filename = ['Theta_nDisc', num2str(nDiscretize),'_nPaths_', num2str(nPaths), '.mat'];
 save(filename,'theta')
-
