@@ -18,7 +18,7 @@ qc_cost = zeros(1, nDiscretize); % constraint cost of the whole robot manipulato
 [sphere_centers,radi] = stompRobotSphere(X);
 % Initial velocity at the sphere centers around the manipulator is 0
 vel = zeros(length(sphere_centers), 1);
-qo_cost{1} = sum(stompObstacleCost(sphere_centers, radi, voxel_world, vel, nJoints));
+qo_cost{1} = stompObstacleCost(sphere_centers, radi, voxel_world, vel, nJoints);
 
 % iterate through all time stamps
 for i = 2 : nDiscretize
@@ -43,7 +43,7 @@ for i = 2 : nDiscretize
     % Approximate the speed (xb_dot) using the finite difference of the current and
     % the previous position
     vel = vecnorm(sphere_centers_prev - sphere_centers,2,2);
-    qo_cost{i} = sum(stompObstacleCost(sphere_centers, radi, voxel_world, vel, nJoints));
+    qo_cost{i} = stompObstacleCost(sphere_centers, radi, voxel_world, vel, nJoints);
     
     %% TODO: Define your qc_cost to add constraint on the end-effector
     % scenario 1: no constraints
@@ -59,7 +59,7 @@ end
 
 %% Local trajectory cost: you need to specify the relative weights between different costs
 qo_cost = cell2mat(qo_cost);
-Stheta = 1000*qo_cost + qc_cost; % size(Stheta) = [1, nDiscretize]
+Stheta = 1000*qo_cost + qc_cost; % size(Stheta) = [nJoints, nDiscretize]
 
 % sum over time and add the smoothness cost
 theta = theta(:, 2:end-1);

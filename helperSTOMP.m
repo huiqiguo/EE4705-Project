@@ -55,21 +55,36 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     [sampledTrajectories, noise] = stompSamples(nPaths, sigma, theta);
 
     %% TODO: Calculate Local trajectory cost for each sampled trajectory
-
-    % initialise column vector to store the cost from each sampled trajectory
-    localCost = cell(nPaths, 1); 
+    
+    % size(localCost) = [nJoints, 1]
+    % size(each cell) = [nPaths, nDiscretize]
+    localCost = cell(numJoints, 1); 
+    for i = 1:numJoints
+        localCost{i} = cell(nPaths, nDiscretize);
+    end
 
     % loop through each sampled path and calculate its cost
     for i = 1:nPaths
         theta_i = sampledTrajectories{i};
-        [scost_i, qcost_i] = stompTrajCost(robot_struct, theta_i, R, voxel_world);
-        localCost{i} = scost_i;
-    end
 
-    % localCost = cell2mat(localCost); % size = [nPaths, nDiscretize]
+        % size(scost_i) = [nJoints, nDiscretize]
+        [scost_i, qcost_i] = stompTrajCost(robot_struct, theta_i, R, voxel_world);
+
+        % store costs according to required dimensions
+        for j = 1:numJoints
+            for k = 1:nDiscretize
+                localCost{j}{i, k} = scost_i(j, k);
+            end
+        end
+    end
     
     %% TODO: Given the local traj cost, update local trajectory probability
-    probabilities = stompUpdateProb(localCost); % size = [nPaths, nDiscretize]
+
+    probabilities = cell(numJoints, 1);
+
+    for i = 1:numJoints
+        probabilities{i} = stompUpdateProb(cell2mat(localCost{i}));
+    end
     
     %% TODO: Compute delta theta (aka gradient estimator, the improvement of the delta)
     % Calculate the weighted sum of trajectory differences based on probabilities
