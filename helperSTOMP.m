@@ -30,7 +30,6 @@ R = A' * A; % multiply A by its transpose, R is symmetric
 Rinv = inv(R); % also symmetric
 M = 1 / nDiscretize * Rinv ./ max(Rinv, [], 1); % normalized by each column, no longer symmetric
 Rinv = 1.5*Rinv/sum(sum(Rinv)); % normalized R inverse, so that the sample is still within the voxel world
-Rinv = padarray(Rinv, [1 1], 0);
 
 %%
 %Planner
@@ -87,19 +86,15 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
     end
     
     %% TODO: Compute delta theta (aka gradient estimator, the improvement of the delta)
-    % Calculate the weighted sum of trajectory differences based on probabilities
-    delta_theta = zeros(size(theta));
-    for i = 1:nPaths
-        delta_theta = delta_theta + probabilities(i) * (theta_samples{i} - theta);
-    end
+    dTheta = stompDTheta(probabilities, noise);
+
+    %% TODO: Compute the new trajectory
+    theta = stompUpdateTheta(theta, dTheta, Rinv);
     
-    %% TODO: Compute the cost of the new trajectory
-    % Calculate the total cost of the updated theta trajectory
-    new_cost = sum(sum((theta + delta_theta - target_trajectory).^2)); % Example: squared error cost function
+    %% TODO: Compute the total cost of the new trajectory
+    [~, Qtheta] = stompTrajCost(robot_struct, theta, R, voxel_world);
 
-
-
-    %% TODO: Compute the cost of the new trajectory
+    %%
  
     toc
 
