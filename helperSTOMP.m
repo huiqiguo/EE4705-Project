@@ -21,10 +21,10 @@ theta_samples = cell(1,nPaths);
 
 %% for calculating the acceleration of theta
 % Precompute
-A_k = eye(nDiscretize - 1, nDiscretize - 1);
-A = -2 * eye(nDiscretize, nDiscretize); % identity matrix with -2 as the diagonal
-A(1:nDiscretize - 1, 2:nDiscretize) = A(1:nDiscretize - 1, 2:nDiscretize) + A_k; % sets the diagonal above the -2 diagonal to be all 1s
-A(2:nDiscretize, 1:nDiscretize - 1) = A(2:nDiscretize, 1:nDiscretize - 1) + A_k; % sets the diagonal below the -2 diagonal to be all 1s
+A_k = eye(nDiscretize + 1, nDiscretize + 1);
+A = -2 * eye(nDiscretize + 2, nDiscretize + 2); % identity matrix with -2 as the diagonal
+A(1:nDiscretize + 1, 2:nDiscretize + 2) = A(1:nDiscretize + 1, 2:nDiscretize + 2) + A_k; % sets the diagonal above the -2 diagonal to be all 1s
+A(2:nDiscretize + 2, 1:nDiscretize + 1) = A(2:nDiscretize + 2, 1:nDiscretize + 1) + A_k; % sets the diagonal below the -2 diagonal to be all 1s
 A = A(:, 2:end-1); % remove the first and last column of A, obtain the finite difference matrix
 R = A' * A; % multiply A by its transpose, R is symmetric
 Rinv = inv(R); % also symmetric
@@ -65,10 +65,10 @@ while abs(Qtheta - QthetaOld) > convergenceThreshold
         localCost{i} = scost_i;
     end
 
-    localCost = cell2mat(localCost);
+    localCost = cell2mat(localCost); % size = [nPaths, nDiscretize]
     
     %% TODO: Given the local traj cost, update local trajectory probability
-    probabilities = stompUpdateProb(localCost);
+    probabilities = stompUpdateProb(localCost); % size = [nPaths, nDiscretize]
     
     %% TODO: Compute delta theta (aka gradient estimator, the improvement of the delta)
     % Calculate the weighted sum of trajectory differences based on probabilities
