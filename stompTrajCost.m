@@ -63,6 +63,6 @@ Stheta = 1000*qo_cost + qc_cost; % size(Stheta) = [nJoints, nDiscretize]
 
 % sum over time and add the smoothness cost
 theta = theta(:, 2:end-1);
-Qtheta = sum(Stheta) + 1/2 * sum(theta * R * theta', "all");
+Qtheta = sum(Stheta, "all") + 1/2 * sum(theta * R * theta', "all");
 
 end
