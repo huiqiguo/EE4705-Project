@@ -17,7 +17,7 @@ binary_world = zeros(Env_size(2, 1) / voxel_size(1), Env_size(2, 2) / voxel_size
 
 %% Static obstacles
 lboxes = [0.16; 0.2]; % length of cubes
-boxCenters = [0.5, 0.25, 0.15; 0.23, -0.2, 0.2]; % world coordinates of box centers
+boxCenters = [0.5, 0.3, 0.15; 0.23, -0.2, 0.2]; % world coordinates of box centers
 world = {};
 
 for i = 1:length(lboxes)
