@@ -139,11 +139,11 @@ isTrajectoryInCollision = any(inCollision)
 %% Plot training dynamics
 enableVideoTraining = 0;
 
-v = VideoWriter('KinvaGen3_Training.avi');
+v = VideoWriter('KinovaGen3_Training.avi');
 v.FrameRate = 15;
 open(v);
 
-htext = text(-0.2,0.6,0.7,'Iteration = 0','HorizontalAlignment','left','FontSize',14);
+% htext = text(-0.2,0.6,0.7,'Iteration = 0','HorizontalAlignment','left','FontSize',14);
 
 if enableVideoTraining == 1
     theta_animation_tmp = theta_animation(~cellfun('isempty',theta_animation));
@@ -168,7 +168,7 @@ end
 close(v);
 
 %% Plot path
-enableVideo = 0;
+enableVideo = 1;
 if enableVideo == 1
     v = VideoWriter('KinvaGen3_wEEConY3.avi');
     v.FrameRate =2;
@@ -184,6 +184,7 @@ if enableVideo == 1
     end
     close(v);
 end
+
 %%
 displayAnimation = 1;
 if displayAnimation
