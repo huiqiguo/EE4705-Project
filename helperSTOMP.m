@@ -170,7 +170,7 @@ close(v);
 %% Plot path
 enableVideo = 1;
 if enableVideo == 1
-    v = VideoWriter('KinovaGen3_wEEConY3.avi');
+    v = VideoWriter('KinovaGen3.avi');
     v.FrameRate =2;
     open(v);
 
