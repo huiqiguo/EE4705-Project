@@ -41,6 +41,7 @@ for k=1:nJoints
     % home configuration of base frame
     M = robot_struct.Bodies{1}.Joint.ChildToJointTransform;
     
+    % TASK 3: Utilise PoE for forward kinematics
     T{k} = FKinSpace(M, slist(:, 1:k), theta_k); % compute transformation matrix up to joint k
     
     X(k,1:3) = T{k}(1:3, 4)'; % extract world coordinates of joint k

@@ -28,7 +28,7 @@ for i = 2 : nDiscretize
     [X, ~] = updateJointsWorldPosition(robot_struct, theta(:, i));
     [sphere_centers, radi] = stompRobotSphere(X);
 
-    %% TO IMPROVE
+    %% INTERPOLATION OF SPHERE CENTERS
     % number of sphere centers might be different across iterations,
     % hence this section interpolates the larger array to match the number of points in the smaller array;
     % works but very slow
@@ -46,6 +46,7 @@ for i = 2 : nDiscretize
     qo_cost{i} = stompObstacleCost(sphere_centers, radi, voxel_world, vel, nJoints);
     
     %% TODO: Define your qc_cost to add constraint on the end-effector
+    % TASK 5: Addition of constraint cost
     % scenario 1: no constraints
     % qc_cost(i) = 0;
 
